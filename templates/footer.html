@@ -112,9 +112,17 @@
       </div>
     </div>
 
-    <script src="static/js/bootstrap.bundle.min.js"></script>
-    <script src="static/js/tiny-slider.js"></script>
-    <script src="static/js/aos.js"></script>
-    <script src="static/js/navbar.js"></script>
-    <script src="static/js/counter.js"></script>
-    <script src="static/js/custom.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tiny-slider.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/counter.js') }}"></script>
+    <script src=" {{ url_for('static', filename='js/custom.js') }}"></script>
+  </body>
+</html>
+
+
+
+
+
+

@@ -1,13 +1,13 @@
 {% include 'header.html' %}
     <div
       class="hero page-inner overlay"
-      style="background-image: url('static/images/hero_bg_3.jpg')"
+      style="background-image: url_for('static', filename='images/hero_bg_3.jpg')"
     >
       <div class="container">
         <div class="row justify-content-center align-items-center">
           <div class="col-lg-9 text-center mt-5">
             <h1 class="heading" data-aos="fade-up">
-              5232 California AVE. 21BC
+              {{property.address}}
             </h1>
 
             <nav
@@ -24,7 +24,7 @@
                   class="breadcrumb-item active text-white-50"
                   aria-current="page"
                 >
-                  5232 California AVE. 21BC
+                  {{property.address}}
                 </li>
               </ol>
             </nav>
@@ -39,31 +39,26 @@
           <div class="col-lg-7">
             <div class="img-property-slide-wrap">
               <div class="img-property-slide">
-                <img src="static/images/img_1.jpg" alt="Image" class="img-fluid" />
-                <img src="static/images/img_2.jpg" alt="Image" class="img-fluid" />
-                <img src="static/images/img_3.jpg" alt="Image" class="img-fluid" />
+                {% for image in property.images %}
+                  {% if image == " " %}
+
+                  {% endif %}
+                  <img src="{{image.img_url}}" alt="Image" class="img-fluid" />
+                {% endfor %}
               </div>
             </div>
           </div>
           <div class="col-lg-4">
-            <h2 class="heading text-primary">5232 California Ave. 21BC</h2>
-            <p class="meta">California, United States</p>
+            <h2 class="heading text-primary">{{property.address}}</h2>
+            <p class="meta">{{property.location}}</p>
             <p class="text-black-50">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione
-              laborum quo quos omnis sed magnam id, ducimus saepe, debitis error
-              earum, iste dicta odio est sint dolorem magni animi tenetur.
+              {{property.caption}}
             </p>
-            <p class="text-black-50">
-              Perferendis eligendi reprehenderit, assumenda molestias nisi eius
-              iste reiciendis porro tenetur in, repudiandae amet libero.
-              Doloremque, reprehenderit cupiditate error laudantium qui, esse
-              quam debitis, eum cumque perferendis, illum harum expedita.
-            </p>
-
             <div class="d-block agent-box p-5">
               <div class="img mb-4">
                 <img
-                  src="static/images/person_2-min.jpg"
+
+                  src="{{ url_for('static', filename='images/person_2-min.jpg') }}"
                   alt="Image"
                   class="img-fluid"
                 />

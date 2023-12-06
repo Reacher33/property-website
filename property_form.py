@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, FieldList, FormField, IntegerField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, FieldList, FormField, IntegerField
+from wtforms.validators import DataRequired, Length
+from flask_ckeditor import CKEditorField
 
 
 class ImageForm(FlaskForm):
@@ -15,7 +16,7 @@ class PropertyForm(FlaskForm):
     location = StringField("Location", validators=[DataRequired()])
     toilet = IntegerField("Number of toilet", validators=[DataRequired()])
     bed = IntegerField("Number of bedrooms", validators=[DataRequired()])
-    caption = TextAreaField('Caption')
-    images = FieldList(FormField(ImageForm), min_entries=4)  # FieldList to handle multiple images
+    caption = CKEditorField("Description", validators=[DataRequired(), Length(min=3, max=200)])
+    images = FieldList(FormField(ImageForm), min_entries=3)  # FieldList to handle multiple images
 
     submit = SubmitField("Submit Post")

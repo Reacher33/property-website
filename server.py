@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_bootstrap import Bootstrap5
@@ -16,17 +16,40 @@ db = SQLAlchemy()
 db.init_app(app)
 
 
+# Custom Jinja2 filter to format number with commas
+def format_number(value):
+    return "{:,}".format(value)
+
+
+# Adding the filter to the Jinja2 environment
+app.jinja_env.filters['format'] = format_number
+
+
 class Property(db.Model):
     __tablename__ = "properties"
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Integer, nullable=False)
     address = db.Column(db.String(250), nullable=False)
     location = db.Column(db.String(250), nullable=False)
-    toilet = db.Column(db.Integer, primary_key=True)
-    bed = db.Column(db.Integer, primary_key=True)
-    caption = db.Column(db.Text)
+    toilet = db.Column(db.Integer, nullable=True)
+    bed = db.Column(db.Integer, nullable=True)
+    caption = db.Column(db.String(200))
 
     images = relationship("Image", back_populates="property")
+
+    def to_dict(self):
+        # Method 1.
+        dictionary = {}
+        # Loop through each column in the data record
+        for column in self.__table__.columns:
+            # Create a new dictionary entry;
+            # where the key is the name of the column
+            # and the value is the value of the column
+            dictionary[column.name] = getattr(self, column.name)
+        return dictionary
+
+        # Method 2. Alternatively use Dictionary Comprehension to do the same thing.
+        # return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
 class Image(db.Model):
@@ -48,32 +71,22 @@ with app.app_context():
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    property_data = db.session.execute(db.select(Property)).scalars().all()
 
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
-
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
+    return render_template("index.html", property_data=property_data)
 
 
 @app.route("/properties")
 def properties():
-    return render_template("properties.html")
+    property_data = db.session.execute(db.select(Property)).scalars().all()
+
+    return render_template("properties.html", property_data=property_data)
 
 
-@app.route("/property-single")
-def property_single():
-    return render_template("property-single.html")
-
-
-@app.route("/service")
-def services():
-    return render_template("services.html")
+@app.route("/property-single/<int:property_id>")
+def property_single(property_id):
+    requested_property = db.get_or_404(Property, property_id)
+    return render_template("property-single.html", property=requested_property)
 
 
 @app.route("/add", methods=["GET", "POST"])
@@ -90,11 +103,42 @@ def add_property():
 
         # Loop through the submitted images and associate them with the new property
         for image_data in form.images.data:
-            new_images = Image(img_url=image_data["url"], property_id=property_id)  # Assign the property ID to the image
+            new_images = Image(img_url=image_data["url"],
+                               property_id=property_id)  # Assign the property ID to the image
             db.session.add(new_images)
             db.session.commit()
         return redirect(url_for("home"))
     return render_template("add_property.html", form=form)
+
+
+@app.route("/search")
+def search_property():
+    image = []
+    query_location = request.args.get("loc")
+    all_properties = db.session.execute(db.select(Property).where(Property.location == query_location)).scalars().all()
+    for property in all_properties:
+        property_images = property.images
+        for images in property_images:
+            image.append(images.img_url)
+    if all_properties:
+        return jsonify(data={"property_images": [img for img in image], 'property': [property.to_dict() for property in all_properties]})
+    else:
+        return jsonify(error={"Not Found": "Sorry doesnt exist"})
+
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
+
+
+@app.route("/service")
+def services():
+    return render_template("services.html")
 
 
 if __name__ == "__main__":

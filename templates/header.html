@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Untree.co" />
-    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="shortcut icon" href="{{url_for('static', filename='images/favicon.png')}}" />
 
     <meta name="description" content="" />
     <meta name="keywords" content="bootstrap, bootstrap5" />
@@ -17,8 +17,9 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="static/fonts/icomoon/style.css" />
-    <link rel="stylesheet" href="static/fonts/flaticon/font/flaticon.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/icomoon/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/icomoon/style.css') }}" />
+
 
     <link rel="stylesheet" href="{{url_for('static', filename='css/tiny-slider.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='css/aos.css')}}" />
@@ -27,6 +28,8 @@
     <title>
       Property &mdash; Free Bootstrap 5 Website Template by Untree.co
     </title>
+    <!-- Load Bootstrap-Flask CSS here -->
+    {{ bootstrap.load_css() }}
   </head>
   <body>
     <div class="site-mobile-menu site-navbar-target">
